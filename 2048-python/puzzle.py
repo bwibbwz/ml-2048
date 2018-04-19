@@ -27,12 +27,13 @@ KEY_LEFT = "'a'"
 KEY_RIGHT = "'d'"
 
 class GameGrid(Frame):
-    def __init__(self):
+    def __init__(self, manual_input=True):
         Frame.__init__(self)
 
         self.grid()
         self.master.title('2048')
-        self.master.bind("<Key>", self.key_down)
+        if manual_input:
+            self.master.bind("<Key>", self.key_down)
 
         #self.gamelogic = gamelogic
         self.commands = {   KEY_UP: up, KEY_DOWN: down, KEY_LEFT: left, KEY_RIGHT: right,
@@ -43,7 +44,7 @@ class GameGrid(Frame):
         self.init_matrix()
         self.update_grid_cells()
         
-        self.mainloop()
+#        self.mainloop()
 
     def init_grid(self):
         background = Frame(self, bg=BACKGROUND_COLOR_GAME, width=SIZE, height=SIZE)
@@ -102,4 +103,4 @@ class GameGrid(Frame):
             index = (self.gen(), self.gen())
         self.matrix[index[0]][index[1]] = 2
 
-gamegrid = GameGrid()
+#gamegrid = GameGrid()
