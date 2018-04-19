@@ -28,6 +28,14 @@ class test2048:
             self.gamegrid.key_down(event_rn)
             if game_state(self.gamegrid.matrix) == 'win' \
             or game_state(self.gamegrid.matrix) == 'lose':
-                time.sleep(1)
+                #time.sleep(1)
                 return
             time.sleep(self.sleep)
+
+    def get_status(self):
+        return self.gamegrid.matrix
+
+    def take_step(self, inp):
+        event_rn.char = chr(inp)
+        self.gamegrid.key_down(event_rn)
+
