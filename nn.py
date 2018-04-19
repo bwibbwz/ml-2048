@@ -55,8 +55,8 @@ class NeuronLayer(Layer):
         Layer.__init__(self, Neuron, number_of_neurons, initial_value = initial_value)
 
 class InputLayer(Layer):
-    def __init__(self, number_of_inputs):
-        self.items = [None]*number_of_inputs
+    def __init__(self, number_of_input_nodes):
+        self.items = [None]*number_of_input_nodes
 
 class WeightLayer(Layer):
     def __init__(self, layer1, layer2, initial_values=None):
@@ -79,6 +79,9 @@ class WeightLayer(Layer):
     def get_value(self, l1i, l2i):
         return self.items[self.layers_to_weight_map[l1i][l2i]]
         
+class OutputLayer(Layer):
+    def __init__(self, number_of_output_nodes)
+        self.items = [None]*number_of_output_nodes
 
 ## --- --- ---
 n1 = Neuron(1.5)
