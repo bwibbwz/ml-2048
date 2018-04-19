@@ -1,18 +1,35 @@
 from random import random, randint
 
+# ACTIVATION FUNCTIONS
+class ActivationFunction():
+    def __init__(self):
+        pass
+
+class PassThrough(ActivationFunction):
+    def transform_value(self, input_value):
+        return input_value
+
+class RelU(ActivationFunction):
+    def transform_value(self, input_value):
+        return max(0, input_value)
+
 # SIMPLE VALUE CONSTRUCTS
 class BasicFloat():
     def __init__(self, initial_value):
         self.value = initial_value
 
     def set_value(self, value):
-        self.value = value
+        print '---> ', value, self.activation_function(value)
+        self.value = self.activation_function(value)
 
     def get_value(self):
         return self.value
 
     def __repr__(self):
         return str(self.get_value())
+
+    def set_activation_function(self, activation_function=PassThrough):
+        self.activation_function = activation_function
 
 class Neuron(BasicFloat):
     def __init__(self, initial_value=0.0):
@@ -93,7 +110,7 @@ class NeuronLayer(Layer):
 
 class InputLayer(Layer):
     def __init__(self, number_of_input_nodes):
-        Layer.__init__(self, None, number_of_input_nodes)
+        Layer.__init__(self, BasicFloat, number_of_input_nodes, initial_value = None)
 
 class WeightLayer(Layer):
     def __init__(self, layer1, layer2, initial_values=None):
@@ -116,7 +133,7 @@ class WeightLayer(Layer):
         
 class OutputLayer(Layer):
     def __init__(self, previous_layer, number_of_output_nodes):
-        Layer.__init__(self, None, number_of_output_nodes)
+        Layer.__init__(self, BasicFloat, number_of_output_nodes, initial_value = None)
         
         self.set_previous_layer(previous_layer)
         weights_layer = WeightLayer(previous_layer, self)
@@ -132,7 +149,7 @@ l1 = NeuronLayer(i1, 4)
 l1.set_all_values([1.1, 1.2, 1.3, 1.4])
 print(l1)
 l2 = NeuronLayer(l1, 5)
-l2.set_all_values([0.1, 0.2, 0.3, 0.4, 0.5])
+l2.set_all_values([0.1, -0.2, -0.3, 0.4, 0.5])
 print(l2)
 
 print '-- -- -- --'
