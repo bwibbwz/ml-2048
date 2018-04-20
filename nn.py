@@ -33,6 +33,11 @@ class DiscreteSigmoid(ActivationFunction):
     def transform(self, input_value):
         return int(floor(self.sigmoid(input_value) * self.number_of_steps))
 
+# OTHER FUNCTIONS
+class RandomWrapper():
+    def __call__(self):
+        return random()
+
 # ACTIVATION FUNCTION DEFAULTS
 NEURON_ACTIVATION_FUNCTION = Sigmoid()
 WEIGHT_ACTIVATION_FUNCTION = PassThrough()
@@ -41,7 +46,7 @@ INPUT_ACTIVATION_FUNCTION = PassThrough()
 OUTPUT_ACTIVATION_FUNCTION = DiscreteSigmoid(4)
 
 # OTHER DEFULATS
-WEIGHT_INITIAL_VALUE = random
+WEIGHT_INITIAL_VALUE = RandomWrapper()
 
 # NODES, NEURONS AND WEIGHTS
 class Node(object):
@@ -91,7 +96,7 @@ class Neuron(Node):
         self.set_value(new_value)
 
 class Weight(Node):
-    def __init__(self, node_in, node_out, initial_value=WEIGHT_INITIAL_VALUE()):
+    def __init__(self, node_in, node_out, initial_value=WEIGHT_INITIAL_VALUE):
         self.node_in = node_in
         self.node_out = node_out
         super(Weight, self).__init__(initial_value = initial_value, activation_function = WEIGHT_ACTIVATION_FUNCTION)
