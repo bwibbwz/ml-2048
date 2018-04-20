@@ -1,168 +1,175 @@
-from random import random, randint
+from random import random
 
 # ACTIVATION FUNCTIONS
 class ActivationFunction():
-    def __init__(self):
-        pass
+    def __call__(self, input_value):
+        return self.transform(input_value)
 
 class PassThrough(ActivationFunction):
-    def transform_value(self, input_value):
+    def transform(self, input_value):
         return input_value
 
+class Scale(ActivationFunction):
+    def __init__(self, scale_factor):
+        self.scale_factor = scale_factor
+
+    def transform(self, input_value):
+        return self.scale_factor * input_value
+
 class RelU(ActivationFunction):
-    def transform_value(self, input_value):
-        return max(0, input_value)
+    def transform(self, input_value):
+        return max([0.0, input_value])
 
-# SIMPLE VALUE CONSTRUCTS
-class BasicFloat():
-    def __init__(self, initial_value):
-        self.value = initial_value
+# ACTIVATION FUNCTION DEFAULTS
+NEURON_ACTIVATION_FUNCTION = RelU
+WEIGHT_ACTIVATION_FUNCTION = PassThrough
+NODE_ACTIVATION_FUNCTION = PassThrough
+INPUT_ACTIVATION_FUNCTION = PassThrough
+OUTPUT_ACTIVATION_FUNCTION = PassThrough
 
-    def set_value(self, value):
-        print '---> ', value, self.activation_function(value)
-        self.value = self.activation_function(value)
+# OTHER DEFULATS
+WEIGHT_INITIAL_VALUE = random
+
+# NODES, NEURONS AND WEIGHTS
+class Node(object):
+    def __init__(self, initial_value=None, activation_function=NODE_ACTIVATION_FUNCTION()):
+        self.set_activation_function(activation_function)
+        self.set_value(initial_value)
+
+    def set_activation_function(self, activation_function):
+        self.activation_function = activation_function
 
     def get_value(self):
         return self.value
 
+    def set_value(self, value):
+        self.value = self.activation_function(value)
+
     def __repr__(self):
-        return str(self.get_value())
+        return str(self.value)
 
-    def set_activation_function(self, activation_function=PassThrough):
-        self.activation_function = activation_function
+class Neuron(Node):
+    def __init__(self, previous_layer, initial_value=0.0, activation_function=NEURON_ACTIVATION_FUNCTION()):
+        super(Neuron, self).__init__(initial_value = initial_value, activation_function = activation_function)
+        self.set_previous_layer(previous_layer)
 
-class Neuron(BasicFloat):
-    def __init__(self, initial_value=0.0):
-        BasicFloat.__init__(self, initial_value)
+        self.set_weights_layer(WeightLayer(self, self.get_previous_layer(), len(self.get_previous_layer())))
 
-class Weight(BasicFloat):
-    def __init__(self, initial_value=None):
-        if initial_value == None:
-            BasicFloat.__init__(self, random())
-        else:
-            BasicFloat.__init__(self, initial_value)
+    def get_weights_layer(self):
+        return self.weights
 
-# LAYER CONSTRUCTS
-class Layer():
-    def __init__(self, item_class=None, number_of_items=1, **kwargs):
-        if item_class is None:
-            self.items = [None]*number_of_items
-        else:
-            self.items = []
-            for k in range(number_of_items):
-                self.items.append(item_class(**kwargs))
- 
-        self.previous_layer = None
-        self.weights_layer = None
-
-    def update_layer_values(self):
-        if self.get_previous_layer() is None or self.get_weights_layer() is None:
-            raise RunTimeError('Either a previous layer or its associated weights have not been defined.')
-        else:
-            for k in range(len(self)):
-                new_value = 0.0
-                for h in range(len(self.previous_layer)):
-                    new_value += self.previous_layer.get_value(h) * self.weights_layer.get_value(h,k)
-                self.set_value(k, new_value)
+    def set_weights_layer(self, weights):
+        self.weights = weights
 
     def get_previous_layer(self):
         return self.previous_layer
 
+    def set_previous_layer(self, previous_layer):
+        self.previous_layer = previous_layer
+
+    def update_value(self):
+        pl = self.get_previous_layer()
+        wl = self.get_weights_layer()
+        if len(pl) != len(wl):
+            raise ValueError('The lengths of the previous layer (%i) does not mach the amount of weights(%i)' % (len(pl), len(wl)))
+        new_value = 0.0
+        for k in range(len(pl)):
+            new_value += pl[k].get_value() * wl[k].get_value()
+        self.set_value(new_value)
+
+class Weight(Node):
+    def __init__(self, node_in, node_out, initial_value=WEIGHT_INITIAL_VALUE()):
+        self.node_in = node_in
+        self.node_out = node_out
+        super(Weight, self).__init__(initial_value = initial_value, activation_function = WEIGHT_ACTIVATION_FUNCTION())
+
+# LAYERS
+class Layer(list):
+    def __init__(self, number_of_items, item_class=Node, **kwargs):
+        for k in range(number_of_items):
+            super(Layer, self).append(item_class(**kwargs))
+        self.set_previous_layer(None)
+        self.set_weights_layer(None)
+
     def get_weights_layer(self):
-        return self.weights_layer
+        return self.weights
+
+    def set_weights_layer(self, weights):
+        self.weights = weights
+
+    def get_previous_layer(self):
+        return self.previous_layer
 
     def set_previous_layer(self, previous_layer):
         self.previous_layer = previous_layer
 
-    def set_weights_layer(self, weights_layer):
-        self.weights_layer = weights_layer
-
-    def get_value(self, index):
-        return self.items[index]
-
-    def set_value(self, index, value):
-        self.items[index] = value
-
-    def set_all_values(self, values):
-        if len(values) != len(self):
-            raise ValueError("Length of the values to be set (%i) must be equal to the size of the layer (%i)." % (len(values), len(self)))
-        for k in range(len(values)):
-            self.set_value(k, values[k])
-
-    def initialize_all_values(self, function, *argv):
-        for k in range(len(self)):
-            Layer.set_value(self, k, function(*argv))
-
-    def __repr__(self):
-        returner = ''
-        for k in range(len(self.items)):
-            returner += self.items[k].__repr__() + '\n\r'
-        return returner[:-2]
-
-    def __len__(self):
-        return len(self.items)
-
-class NeuronLayer(Layer):
-    def __init__(self, previous_layer, number_of_neurons, initial_value=0.0):
-        Layer.__init__(self, Neuron, number_of_neurons, initial_value = initial_value)
-        self.previous_layer = previous_layer
-        self.weight_layer = WeightLayer(previous_layer, self)
-
-class InputLayer(Layer):
-    def __init__(self, number_of_input_nodes):
-        Layer.__init__(self, BasicFloat, number_of_input_nodes, initial_value = None)
+    def update_layer(self):
+        for item in self:
+            item.update_value()
 
 class WeightLayer(Layer):
-    def __init__(self, layer1, layer2, initial_values=None):
-        Layer.__init__(self, Weight, len(layer1) * len(layer2))
-
-        # Create the mapping between each node/neuron of the previous layer with the nodes/neurons of the current layer
-        self.layers_to_weight_map = []
-        k = 0
-        for j in range(len(layer1)):
-            self.layers_to_weight_map.append([])
-            for h in range(len(layer2)):
-                self.layers_to_weight_map[j].append(k)
-                k += 1
-
-    def set_value(self, l1i, l2i, value):
-        self.items[self.layers_to_weight_map[l1i][l2i]] = value
+    def __init__(self, node, previous_layer, number_of_items, item_class=Weight, **kwargs):
+        for k in range(number_of_items):
+            super(Layer, self).append(item_class(previous_layer[k], node, initial_value = WEIGHT_INITIAL_VALUE()))
+        self.set_previous_layer(previous_layer)
+    
+    def update_layer(self):
+        pass
         
-    def get_value(self, l1i, l2i):
-        return self.items[self.layers_to_weight_map[l1i][l2i]]
+class NeuronLayer(Layer):
+    def __init__(self, previous_layer, number_of_items, item_class=Neuron, **kwargs):
+        super(NeuronLayer, self).__init__(number_of_items, item_class, previous_layer = previous_layer, **kwargs)
+        self.set_previous_layer(previous_layer)
+    
+        weights = []
+        for item in self:
+            weights.append(item.get_weights_layer())
+
+        self.set_weights_layer(weights)
+
+class InputLayer(Layer):
+    def __init__(self, number_of_items, item_class=Node, **kwargs):
+        super(InputLayer, self).__init__(number_of_items, item_class, activation_function = INPUT_ACTIVATION_FUNCTION(), **kwargs)
+        self.set_previous_layer(None)
+
+    def update_layer(self):
+        pass
         
 class OutputLayer(Layer):
-    def __init__(self, previous_layer, number_of_output_nodes):
-        Layer.__init__(self, BasicFloat, number_of_output_nodes, initial_value = None)
-        
+    def __init__(self, previous_layer, number_of_items, item_class=Neuron, **kwargs):
+        super(OutputLayer, self).__init__(number_of_items, item_class, previous_layer = previous_layer, activation_function = OUTPUT_ACTIVATION_FUNCTION(), initial_value = None, **kwargs)
         self.set_previous_layer(previous_layer)
-        weights_layer = WeightLayer(previous_layer, self)
-        self.set_weights_layer(weights_layer)
 
-## --- --- ---
-i1 = InputLayer(4)
-print(i1)
-i1.set_all_values([1.0, 3, 4.0, "A"])
-print(i1)
+# TEST CODE
+iL  = InputLayer(2, initial_value=3.0)
+hL1 = NeuronLayer(iL, 4)
+hL2 = NeuronLayer(hL1, 2, initial_value = 1.0)
+oL  = OutputLayer(hL2, 1)
 
-l1 = NeuronLayer(i1, 4)
-l1.set_all_values([1.1, 1.2, 1.3, 1.4])
-print(l1)
-l2 = NeuronLayer(l1, 5)
-l2.set_all_values([0.1, -0.2, -0.3, 0.4, 0.5])
-print(l2)
+print iL
+print hL1, hL1.get_weights_layer()
+print hL2
+print oL
 
-print '-- -- -- --'
-o1 = OutputLayer(l2, 2)
-print o1
-wo1 = o1.get_weights_layer()
-wo1.initialize_all_values(random)
+hL1.update_layer()
+hL2.update_layer()
+oL.update_layer()
 
-print '-- -- -- --'
-o1.update_layer_values()
-print 'asdf', o1
+print '--- --- ---'
+print iL
+print hL1, hL1.get_weights_layer()
+print hL2
+print oL
 
-l2.set_value(1, 1.0)
-o1.update_layer_values()
-print 'asdf', o1
+w = hL1.get_weights_layer()
+w[2][1].set_value(3.0)
 
+hL1.update_layer()
+hL2.update_layer()
+oL.update_layer()
+
+print '--- --- ---'
+print iL
+print hL1, hL1.get_weights_layer()
+print hL2
+print oL
