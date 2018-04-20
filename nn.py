@@ -155,13 +155,14 @@ class OutputLayer(Layer):
         self.set_previous_layer(previous_layer)
 
 # TEST CODE
-iL  = InputLayer(2, initial_value=3.0)
+sigmoid = Sigmoid()
+iL  = InputLayer(2, initial_value=sigmoid(3.0))
 hL1 = NeuronLayer(iL, 4)
 hL2 = NeuronLayer(hL1, 2, initial_value = 1.0)
 oL  = OutputLayer(hL2, 1)
 
 print iL
-print hL1, hL1.get_weights_layer()
+print hL1
 print hL2
 print oL
 
@@ -171,12 +172,12 @@ oL.update_layer()
 
 print '--- --- ---'
 print iL
-print hL1, hL1.get_weights_layer()
+print hL1
 print hL2
 print oL
 
 w = hL1.get_weights_layer()
-w[2][1].set_value(3.0)
+w[2][1].set_value(0.01)
 
 hL1.update_layer()
 hL2.update_layer()
@@ -184,6 +185,6 @@ oL.update_layer()
 
 print '--- --- ---'
 print iL
-print hL1, hL1.get_weights_layer()
+print hL1
 print hL2
 print oL
