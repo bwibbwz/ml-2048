@@ -32,7 +32,6 @@ class DiscreteSigmoid(ActivationFunction):
 
     def transform(self, input_value):
         return int(floor(self.sigmoid(input_value) * self.number_of_steps))
-    
 
 # ACTIVATION FUNCTION DEFAULTS
 NEURON_ACTIVATION_FUNCTION = Sigmoid()
@@ -153,6 +152,12 @@ class OutputLayer(Layer):
     def __init__(self, previous_layer, number_of_items, item_class=Neuron, **kwargs):
         super(OutputLayer, self).__init__(number_of_items, item_class, previous_layer = previous_layer, activation_function = OUTPUT_ACTIVATION_FUNCTION, initial_value = 0.0, **kwargs)
         self.set_previous_layer(previous_layer)
+
+        weights = []
+        for item in self:
+            weights.append(item.get_weights_layer())
+
+        self.set_weights_layer(weights)
 
 # TEST CODE
 sigmoid = Sigmoid()
