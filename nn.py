@@ -109,6 +109,16 @@ class Layer(list):
         self.set_previous_layer(None)
         self.set_weights_layer(None)
 
+    def set_values(self, values):
+        if len(values) != len(self):
+            raise ValueError("The length of the input values (%i) does not match the length of the layer (%i)." % (len(values), len(self)))
+        else:
+            for k in range(len(self)):
+                self[k].set_value(values[k])
+
+    def get_values(self):
+        return [node.get_value() for node in self]
+
     def get_weights_layer(self):
         return self.weights
 
