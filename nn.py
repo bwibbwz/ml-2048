@@ -16,12 +16,12 @@ class Scale(ActivationFunction):
     def transform(self, input_value):
         return self.scale_factor * input_value
 
-class RelU(ActivationFunction):
+class ReLU(ActivationFunction):
     def transform(self, input_value):
         return max([0.0, input_value])
 
 # ACTIVATION FUNCTION DEFAULTS
-NEURON_ACTIVATION_FUNCTION = RelU
+NEURON_ACTIVATION_FUNCTION = ReLU
 WEIGHT_ACTIVATION_FUNCTION = PassThrough
 NODE_ACTIVATION_FUNCTION = PassThrough
 INPUT_ACTIVATION_FUNCTION = PassThrough
