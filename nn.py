@@ -164,7 +164,35 @@ class OutputLayer(Layer):
 
         self.set_weights_layer(weights)
 
+# NEURAL NETWORK
+class NeuralNetwork():
+    def __init__(self, neurons_per_hidden_layer, input_layer_size, output_layer_size):
+        self.input_layer = InputLayer(input_layer_size)
+
+        self.hidden_layers = []
+
+        previous_layer = self.input_layer
+        for k in range(len(neurons_per_hidden_layer)):
+            self.hidden_layers.append(NeuronLayer(previous_layer, neurons_per_hidden_layer[k]))
+            previous_layer = self.hidden_layers[k]
+
+        self.output_layer = OutputLayer(previous_layer, output_layer_size)
+
+    def update_all_layers(self):
+        for hl in nn.hidden_layers:
+            hl.update_layer()
+        nn.output_layer.update_layer()
+        
 # TEST CODE
+
+nn = NeuralNetwork([4, 2], 2, 1)
+nn.input_layer[0].set_value(0)
+nn.input_layer[1].set_value(32)
+
+nn.update_all_layers()
+
+print nn.hidden_layers[0]
+"""
 sigmoid = Sigmoid()
 iL  = InputLayer(2, initial_value=sigmoid(3.0))
 hL1 = NeuronLayer(iL, 4)
@@ -203,3 +231,4 @@ print '=== === ==='
 print hL1.get_weights_layer()
 print hL2.get_weights_layer()
 print oL.get_weights_layer()
+"""
