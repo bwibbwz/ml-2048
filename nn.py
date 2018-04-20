@@ -21,17 +21,21 @@ class Sigmoid(ActivationFunction):
     def transform(self, input_value):
         return 1.0 / (1.0 + exp(-input_value))
 
+class TanH(ActivationFunction):
+    def transform(self, input_value):
+        return (exp(input_value) - exp(-input_value)) / (exp(input_value) + exp(-input_value))
+
 class ReLU(ActivationFunction):
     def transform(self, input_value):
         return max([0.0, input_value])
 
-class DiscreteSigmoid(ActivationFunction):
+class DiscreteTanH(ActivationFunction):
     def __init__(self, number_of_steps):
         self.number_of_steps = number_of_steps
-        self.sigmoid = Sigmoid()
+        self.tanh = TanH()
 
     def transform(self, input_value):
-        return int(floor(self.sigmoid(input_value) * self.number_of_steps))
+        return int(floor(self.tanh(input_value) * self.number_of_steps))
 
 # OTHER FUNCTIONS
 class RandomWrapper():
@@ -39,11 +43,11 @@ class RandomWrapper():
         return random()
 
 # ACTIVATION FUNCTION DEFAULTS
-NEURON_ACTIVATION_FUNCTION = Sigmoid()
+NEURON_ACTIVATION_FUNCTION = TanH()
 WEIGHT_ACTIVATION_FUNCTION = PassThrough()
 NODE_ACTIVATION_FUNCTION = PassThrough()
 INPUT_ACTIVATION_FUNCTION = PassThrough()
-OUTPUT_ACTIVATION_FUNCTION = DiscreteSigmoid(4)
+OUTPUT_ACTIVATION_FUNCTION = DiscreteTanH(4)
 
 # OTHER DEFULATS
 WEIGHT_INITIAL_VALUE = RandomWrapper()
