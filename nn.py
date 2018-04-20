@@ -29,13 +29,13 @@ class ReLU(ActivationFunction):
     def transform(self, input_value):
         return max([0.0, input_value])
 
-class DiscreteTanH(ActivationFunction):
-    def __init__(self, number_of_steps):
+class DiscreteAF(ActivationFunction):
+    def __init__(self, number_of_steps, activation_function=PassThrough):
         self.number_of_steps = number_of_steps
-        self.tanh = TanH()
+        self.activation_function = activation_function()
 
     def transform(self, input_value):
-        return int(floor(self.tanh(input_value) * self.number_of_steps))
+        return int(floor(self.activation_function(input_value) * self.number_of_steps))
 
 # OTHER FUNCTIONS
 class RandomWrapper():
@@ -47,7 +47,7 @@ NEURON_ACTIVATION_FUNCTION = TanH()
 WEIGHT_ACTIVATION_FUNCTION = PassThrough()
 NODE_ACTIVATION_FUNCTION = PassThrough()
 INPUT_ACTIVATION_FUNCTION = PassThrough()
-OUTPUT_ACTIVATION_FUNCTION = DiscreteTanH(4)
+OUTPUT_ACTIVATION_FUNCTION = DiscreteAF(4, TanH)
 
 # OTHER DEFULATS
 WEIGHT_INITIAL_VALUE = RandomWrapper()
