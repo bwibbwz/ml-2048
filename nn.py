@@ -1,4 +1,5 @@
 from random import random
+from math import exp
 
 # ACTIVATION FUNCTIONS
 class ActivationFunction():
@@ -16,16 +17,20 @@ class Scale(ActivationFunction):
     def transform(self, input_value):
         return self.scale_factor * input_value
 
+class Sigmoid(ActivationFunction):
+    def transform(self, input_value):
+        return 1.0 / (1.0 + exp(-input_value))
+
 class ReLU(ActivationFunction):
     def transform(self, input_value):
         return max([0.0, input_value])
 
 # ACTIVATION FUNCTION DEFAULTS
-NEURON_ACTIVATION_FUNCTION = ReLU
+NEURON_ACTIVATION_FUNCTION = Sigmoid
 WEIGHT_ACTIVATION_FUNCTION = PassThrough
 NODE_ACTIVATION_FUNCTION = PassThrough
 INPUT_ACTIVATION_FUNCTION = PassThrough
-OUTPUT_ACTIVATION_FUNCTION = PassThrough
+OUTPUT_ACTIVATION_FUNCTION = Sigmoid
 
 # OTHER DEFULATS
 WEIGHT_INITIAL_VALUE = random
@@ -137,7 +142,7 @@ class InputLayer(Layer):
         
 class OutputLayer(Layer):
     def __init__(self, previous_layer, number_of_items, item_class=Neuron, **kwargs):
-        super(OutputLayer, self).__init__(number_of_items, item_class, previous_layer = previous_layer, activation_function = OUTPUT_ACTIVATION_FUNCTION(), initial_value = None, **kwargs)
+        super(OutputLayer, self).__init__(number_of_items, item_class, previous_layer = previous_layer, activation_function = OUTPUT_ACTIVATION_FUNCTION(), initial_value = 0.0, **kwargs)
         self.set_previous_layer(previous_layer)
 
 # TEST CODE
