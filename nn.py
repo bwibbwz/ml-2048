@@ -194,7 +194,6 @@ print hL1
 print hL2
 print oL
 
-
 print '=== === ==='
 print hL1.get_weights_layer()
 print hL2.get_weights_layer()
