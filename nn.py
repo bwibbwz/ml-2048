@@ -1,5 +1,5 @@
 from random import random
-from math import exp
+from math import exp, floor
 
 # ACTIVATION FUNCTIONS
 class ActivationFunction():
@@ -25,19 +25,28 @@ class ReLU(ActivationFunction):
     def transform(self, input_value):
         return max([0.0, input_value])
 
+class DiscreteSigmoid(ActivationFunction):
+    def __init__(self, number_of_steps):
+        self.number_of_steps = number_of_steps
+        self.sigmoid = Sigmoid()
+
+    def transform(self, input_value):
+        return int(floor(self.sigmoid(input_value) * self.number_of_steps))
+    
+
 # ACTIVATION FUNCTION DEFAULTS
-NEURON_ACTIVATION_FUNCTION = Sigmoid
-WEIGHT_ACTIVATION_FUNCTION = PassThrough
-NODE_ACTIVATION_FUNCTION = PassThrough
-INPUT_ACTIVATION_FUNCTION = PassThrough
-OUTPUT_ACTIVATION_FUNCTION = Sigmoid
+NEURON_ACTIVATION_FUNCTION = Sigmoid()
+WEIGHT_ACTIVATION_FUNCTION = PassThrough()
+NODE_ACTIVATION_FUNCTION = PassThrough()
+INPUT_ACTIVATION_FUNCTION = PassThrough()
+OUTPUT_ACTIVATION_FUNCTION = DiscreteSigmoid(4)
 
 # OTHER DEFULATS
 WEIGHT_INITIAL_VALUE = random
 
 # NODES, NEURONS AND WEIGHTS
 class Node(object):
-    def __init__(self, initial_value=None, activation_function=NODE_ACTIVATION_FUNCTION()):
+    def __init__(self, initial_value=None, activation_function=NODE_ACTIVATION_FUNCTION):
         self.set_activation_function(activation_function)
         self.set_value(initial_value)
 
@@ -54,7 +63,7 @@ class Node(object):
         return str(self.value)
 
 class Neuron(Node):
-    def __init__(self, previous_layer, initial_value=0.0, activation_function=NEURON_ACTIVATION_FUNCTION()):
+    def __init__(self, previous_layer, initial_value=0.0, activation_function=NEURON_ACTIVATION_FUNCTION):
         super(Neuron, self).__init__(initial_value = initial_value, activation_function = activation_function)
         self.set_previous_layer(previous_layer)
 
@@ -86,7 +95,7 @@ class Weight(Node):
     def __init__(self, node_in, node_out, initial_value=WEIGHT_INITIAL_VALUE()):
         self.node_in = node_in
         self.node_out = node_out
-        super(Weight, self).__init__(initial_value = initial_value, activation_function = WEIGHT_ACTIVATION_FUNCTION())
+        super(Weight, self).__init__(initial_value = initial_value, activation_function = WEIGHT_ACTIVATION_FUNCTION)
 
 # LAYERS
 class Layer(list):
@@ -134,7 +143,7 @@ class NeuronLayer(Layer):
 
 class InputLayer(Layer):
     def __init__(self, number_of_items, item_class=Node, **kwargs):
-        super(InputLayer, self).__init__(number_of_items, item_class, activation_function = INPUT_ACTIVATION_FUNCTION(), **kwargs)
+        super(InputLayer, self).__init__(number_of_items, item_class, activation_function = INPUT_ACTIVATION_FUNCTION, **kwargs)
         self.set_previous_layer(None)
 
     def update_layer(self):
@@ -142,7 +151,7 @@ class InputLayer(Layer):
         
 class OutputLayer(Layer):
     def __init__(self, previous_layer, number_of_items, item_class=Neuron, **kwargs):
-        super(OutputLayer, self).__init__(number_of_items, item_class, previous_layer = previous_layer, activation_function = OUTPUT_ACTIVATION_FUNCTION(), initial_value = 0.0, **kwargs)
+        super(OutputLayer, self).__init__(number_of_items, item_class, previous_layer = previous_layer, activation_function = OUTPUT_ACTIVATION_FUNCTION, initial_value = 0.0, **kwargs)
         self.set_previous_layer(previous_layer)
 
 # TEST CODE
