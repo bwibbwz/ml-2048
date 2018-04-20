@@ -4,8 +4,7 @@ from random import randint
 # TEST CODE
 
 nn = NeuralNetwork([4, 2], 2, 1)
-nn.input_layer[0].set_value(0)
-nn.input_layer[1].set_value(2)
+nn.input_layer.set_values([0, 2])
 
 nn.update_all_layers()
 print nn.input_layer, nn.output_layer
