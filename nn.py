@@ -196,7 +196,12 @@ class NeuralNetwork(object):
         self.update_all_layers()
 
     def get_weights_shape(self):
-        return [l.get_weights_shape() for l in self]
+        shape = []
+        for layer in self:
+            layer_shape = layer.get_weights_shape()
+            if layer_shape is not None:
+                shape.append(layer_shape)
+        return shape
 
     def get_all_weights(self):
         all_weights = []
