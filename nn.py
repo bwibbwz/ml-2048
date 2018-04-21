@@ -143,7 +143,7 @@ class OutputLayer(Layer):
         self.set_weights_layer(weights)
 
 # NEURAL NETWORK
-class NeuralNetwork():
+class NeuralNetwork(object):
     def __init__(self, neurons_per_hidden_layer, input_layer_size, output_layer_size, input_af=None, hidden_af=None, output_af=None):
         
         if input_af is None:
@@ -194,9 +194,32 @@ class NeuralNetwork():
                 all_weights.append(weights_layer)
         return all_weights
 
+    #NB: Need better checks for the array shapes.
+    def set_all_weights(self, new_weights):
+        for k in range(len(self) - 1):
+            layer = self[k + 1]
+            weights = layer.get_weights_layer()
+            for h in range(len(weights)):
+                weights[h] = new_weights[k][h]
+
+    def __len__(self):
+        return len(self.hidden_layers) + 2
+
     def __iter__(self):
         yield self.input_layer
         for hL in self.hidden_layers:
             yield hL
         yield self.output_layer
 
+    def __getitem__(self, index):
+        if index < 0:
+            index += len(self)
+        if index < 0 or index > len(self) - 1:
+            raise IndexError("The item being referenced, is outside the size of the NeuralNetwork.")
+        if index == 0:
+            return self.input_layer
+        elif index == len(self) - 1:
+            return self.output_layer
+        else:
+            return self.hidden_layers[index - 1]
+            
