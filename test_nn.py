@@ -33,4 +33,18 @@ for k in range(10):
     nn.input_and_update(new_in)
     print input_values, nn.input_layer, nn.output_layer
 
+print '-- -'
+from genetic import GeneticAlgorithm
+ga = GeneticAlgorithm(generation_size = 4, neurons_per_hidden_layer = [4, 2], input_layer_size = 2, output_layer_size = 1, input_af = Log2(), hidden_af = [TanH(), TanH()], output_af = DiscreteAF(2, TanH))
+ga.add_new_generation()
+
+for gen in ga:
+    print ' === Generation ==='
+    for ind in gen:
+        print ' --- Individual ---'
+        for layer in ind:
+            print layer
+        print ind.get_all_weights()
+        print ' --- Individual ---'
+    print ' === Generation ==='
 
