@@ -200,3 +200,6 @@ class NeuralNetwork():
     def input_values(self, input_values):
         self.input_layer.set_values(input_values)
 
+    def input_and_update(self, input_values):
+        self.input_values(input_values)
+        self.update_all_layers()
