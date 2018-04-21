@@ -185,3 +185,18 @@ class NeuralNetwork():
     def input_and_update(self, input_values):
         self.input_values(input_values)
         self.update_all_layers()
+
+    def get_all_weights(self):
+        all_weights = []
+        for layer in self:
+            weights_layer = layer.get_weights_layer()
+            if weights_layer is not None:
+                all_weights.append(weights_layer)
+        return all_weights
+
+    def __iter__(self):
+        yield self.input_layer
+        for hL in self.hidden_layers:
+            yield hL
+        yield self.output_layer
+
