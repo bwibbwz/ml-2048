@@ -1,18 +1,18 @@
 from nn import NeuralNetwork
 from random import randint
-from activation_functions import DiscreteAF, TanH, PassThrough
+from activation_functions import DiscreteAF, TanH, PassThrough, Log2
 
 
 # TEST CODE
 
-nn = NeuralNetwork([4, 2], 2, 1, input_af = PassThrough(), hidden_af = [TanH(), TanH()], output_af = DiscreteAF(2, TanH))
-nn.input_layer.set_values([0, 2])
+nn = NeuralNetwork([4, 2], 2, 1, input_af = Log2(), hidden_af = [TanH(), TanH()], output_af = DiscreteAF(2, TanH))
+input_values = [0, 2]
+nn.input_and_update(input_values)
 
-nn.update_all_layers()
-print nn.input_layer, nn.output_layer
+print input_values, nn.input_layer, nn.output_layer
 
 for k in range(10):
-    new_in = nn.input_layer.get_values()
+    new_in = input_values
     in1 = new_in[0]
     in2 = new_in[1]
     if in1 == in2:
@@ -29,7 +29,8 @@ for k in range(10):
     elif in1 > in2:
         new_in[1] *=2
         
+    input_values = new_in
     nn.input_and_update(new_in)
-    print nn.input_layer, nn.output_layer
+    print input_values, nn.input_layer, nn.output_layer
 
 

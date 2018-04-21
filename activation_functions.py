@@ -1,10 +1,14 @@
 from random import random
 from math import exp, floor
+import numpy as np
 
 # ACTIVATION FUNCTIONS
 class ActivationFunction():
     def __call__(self, input_value):
-        return self.transform(input_value)
+        if input_value is None:
+            return None
+        else:
+            return self.transform(input_value)
 
 class PassThrough(ActivationFunction):
     def transform(self, input_value):
@@ -28,6 +32,14 @@ class TanH(ActivationFunction):
 class ReLU(ActivationFunction):
     def transform(self, input_value):
         return max([0.0, input_value])
+
+# This function has a wrong behaviour with input values of 0. This is done because the 2048 game won't care.
+class Log2(ActivationFunction):
+    def transform(self, input_value):
+        if input_value == 0:
+            return 0.0
+        else:
+            return np.log2(input_value)
 
 class DiscreteAF(ActivationFunction):
     def __init__(self, number_of_steps, activation_function=PassThrough):
