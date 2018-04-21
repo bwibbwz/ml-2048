@@ -103,6 +103,9 @@ class Layer(list):
         for item in self:
             item.update_value()
 
+    def get_weights_shape(self):
+        return [len(w) for w in self.weights]
+
 class WeightLayer(Layer):
     def __init__(self, node, previous_layer, number_of_items, item_class=Weight, **kwargs):
         for k in range(number_of_items):
@@ -111,7 +114,10 @@ class WeightLayer(Layer):
     
     def update_layer(self):
         pass
-        
+
+    def get_weights_shape(self):
+        pass
+
 class NeuronLayer(Layer):
     def __init__(self, previous_layer, number_of_items, item_class=Neuron, **kwargs):
         super(NeuronLayer, self).__init__(number_of_items, item_class, previous_layer = previous_layer, **kwargs)
@@ -131,6 +137,9 @@ class InputLayer(Layer):
     def update_layer(self):
         pass
         
+    def get_weights_shape(self):
+        pass
+
 class OutputLayer(Layer):
     def __init__(self, previous_layer, number_of_items, item_class=Neuron, activation_function=OUTPUT_ACTIVATION_FUNCTION, **kwargs):
         super(OutputLayer, self).__init__(number_of_items, item_class, previous_layer = previous_layer, activation_function = activation_function, initial_value = 0.0, **kwargs)
@@ -185,6 +194,9 @@ class NeuralNetwork(object):
     def input_and_update(self, input_values):
         self.input_values(input_values)
         self.update_all_layers()
+
+    def get_weights_shape(self):
+        return [l.get_weights_shape() for l in self]
 
     def get_all_weights(self):
         all_weights = []
