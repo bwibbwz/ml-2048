@@ -124,16 +124,16 @@ class NeuronLayer(Layer):
         self.set_weights_layer(weights)
 
 class InputLayer(Layer):
-    def __init__(self, number_of_items, item_class=Node, **kwargs):
-        super(InputLayer, self).__init__(number_of_items, item_class, activation_function = INPUT_ACTIVATION_FUNCTION, **kwargs)
+    def __init__(self, number_of_items, item_class=Node, activation_function=INPUT_ACTIVATION_FUNCTION, **kwargs):
+        super(InputLayer, self).__init__(number_of_items, item_class, activation_function = activation_function, **kwargs)
         self.set_previous_layer(None)
 
     def update_layer(self):
         pass
         
 class OutputLayer(Layer):
-    def __init__(self, previous_layer, number_of_items, item_class=Neuron, **kwargs):
-        super(OutputLayer, self).__init__(number_of_items, item_class, previous_layer = previous_layer, activation_function = OUTPUT_ACTIVATION_FUNCTION, initial_value = 0.0, **kwargs)
+    def __init__(self, previous_layer, number_of_items, item_class=Neuron, activation_function=OUTPUT_ACTIVATION_FUNCTION, **kwargs):
+        super(OutputLayer, self).__init__(number_of_items, item_class, previous_layer = previous_layer, activation_function = activation_function, initial_value = 0.0, **kwargs)
         self.set_previous_layer(previous_layer)
 
         weights = []
@@ -144,17 +144,35 @@ class OutputLayer(Layer):
 
 # NEURAL NETWORK
 class NeuralNetwork():
-    def __init__(self, neurons_per_hidden_layer, input_layer_size, output_layer_size):
-        self.input_layer = InputLayer(input_layer_size)
+    def __init__(self, neurons_per_hidden_layer, input_layer_size, output_layer_size, input_af=None, hidden_af=None, output_af=None):
+        
+        if input_af is None:
+            self.input_layer = InputLayer(input_layer_size)
+        else:
+            self.input_layer = InputLayer(input_layer_size, activation_function = input_af)
 
         self.hidden_layers = []
 
+        # BUG: Need to check the dimensions of neurons_per_hidden_layer
+        # BUG: Need to check the dimensions of hidden_af further
+
         previous_layer = self.input_layer
         for k in range(len(neurons_per_hidden_layer)):
-            self.hidden_layers.append(NeuronLayer(previous_layer, neurons_per_hidden_layer[k]))
+            if hidden_af is None:
+                self.hidden_layers.append(NeuronLayer(previous_layer, neurons_per_hidden_layer[k]))
+            elif len(hidden_af) == len(neurons_per_hidden_layer):
+                self.hidden_layers.append(NeuronLayer(previous_layer, neurons_per_hidden_layer[k], activation_function = hidden_af[k]))
+            elif len(hidden_af) == 1:
+                self.hidden_layers.append(NeuronLayer(previous_layer, neurons_per_hidden_layer[k], activation_function = hidden_af[0]))
+            else:
+                raise ValueError('The dimensions of hidden_af (%i) do not match the amount of hidden layers (%i).' % (len(hidden_af), len(neurons_per_hidden_layer)))
             previous_layer = self.hidden_layers[k]
 
         self.output_layer = OutputLayer(previous_layer, output_layer_size)
+        if output_af is None:
+            self.output_layer = OutputLayer(previous_layer, output_layer_size)
+        else:
+            self.output_layer = OutputLayer(previous_layer, output_layer_size, activation_function = output_af)
 
     def update_all_layers(self):
         for hl in self.hidden_layers:

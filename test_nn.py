@@ -1,18 +1,20 @@
 from nn import NeuralNetwork
 from random import randint
+from activation_functions import DiscreteAF, TanH, PassThrough
+
 
 # TEST CODE
 
-nn = NeuralNetwork([4, 2], 2, 1)
+nn = NeuralNetwork([4, 2], 2, 1, input_af = PassThrough(), hidden_af = [TanH(), TanH()], output_af = DiscreteAF(2, TanH))
 nn.input_layer.set_values([0, 2])
 
 nn.update_all_layers()
 print nn.input_layer, nn.output_layer
 
 for k in range(10):
-    in1 = nn.input_layer.get_values()[0]
-    in2 = nn.input_layer.get_values()[1]
-    new_in = [in1, in2]
+    new_in = nn.input_layer.get_values()
+    in1 = new_in[0]
+    in2 = new_in[1]
     if in1 == in2:
         if randint(0, 1) == 0:
             new_in = [in1 + in2, 0]
