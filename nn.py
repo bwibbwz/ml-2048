@@ -197,3 +197,6 @@ class NeuralNetwork():
             hl.update_layer()
         self.output_layer.update_layer()
 
+    def input_values(self, input_values):
+        self.input_layer.set_values(input_values)
+

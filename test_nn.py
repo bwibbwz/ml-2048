@@ -27,7 +27,8 @@ for k in range(10):
     elif in1 > in2:
         new_in[1] *=2
         
-    nn.input_layer.set_values(new_in)
+    #nn.input_layer.set_values(new_in)
+    nn.input_values(new_in)
     nn.update_all_layers()
     print nn.input_layer, nn.output_layer
 
