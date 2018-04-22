@@ -28,7 +28,7 @@ class GeneticAlgorithm(list):
 
         if len(index) == 1 and len(child_weights) < len(generation):
             male = index.pop(randint(0, len(index) - 1))
-            female = randint(0, len(parent_weights))
+            female = randint(0, len(parent_weights) - 1)
             child = self.breed_weights(parent_weights[male], parent_weights[female], mix_odds = mix_odds, mutate_odds = mutate_odds)
             child_weights.append(child)
 
