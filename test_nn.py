@@ -1,6 +1,6 @@
 from nn import NeuralNetwork
 from random import randint
-from activation_functions import DiscreteAF, TanH, PassThrough, Log2
+from activation_functions import DiscreteAF, TanH, PassThrough, Log2, ReLU
 
 
 # TEST CODE
@@ -35,7 +35,7 @@ for k in range(10):
 
 print '-- -'
 from genetic import GeneticAlgorithm
-ga = GeneticAlgorithm(generation_size = 4, neurons_per_hidden_layer = [4, 2], input_layer_size = 2, output_layer_size = 1, input_af = Log2(), hidden_af = [TanH(), TanH()], output_af = DiscreteAF(2, TanH))
+ga = GeneticAlgorithm(generation_size = 4, neurons_per_hidden_layer = [4, 2], input_layer_size = 2, output_layer_size = 1, input_af = Log2(), hidden_af = [ReLU(), ReLU()], output_af = DiscreteAF(2, TanH))
 ga.add_new_generation()
 
 for gen in ga:
