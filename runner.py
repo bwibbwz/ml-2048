@@ -2,7 +2,7 @@ from genetic import Individual
 from random import randint
 from gamepython.run import run2048
 from gamepython.logic import game_state
-from activation_functions import DiscreteAF, TanH, PassThrough, Log2, ReLU
+from activation_functions import DiscreteAF, TanH, PassThrough, Log2, ReLU, Scale
 import numpy as np
 
 class Runner(object):
@@ -20,6 +20,8 @@ class Runner(object):
         game_state.append(repeat_check)
         if self.has_game_ended(matrix):
             return False
+        for neuron in individual.input_layer:
+            neuron.set_activation_function(Scale(1.0/max(game_state)))
         game_input = individual.input_and_update(game_state)
         game.run(input_value = game_input[0])
         self.fitness_penalty -= repeat_check
