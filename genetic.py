@@ -41,6 +41,16 @@ class Generation(list):
         for k in range(size):
             super(Generation, self).append(Individual(fitness = 0.0, **self.individual_parameters))
         
+    def set_random_fitness(self):
+        for ind in self:
+            ind.set_fitness(random())
+
     def get_weights_shape(self):
         return self[0].get_weights_shape()
 
+    def sort_by_fitness(self):
+        self.sort(key=lambda ind: ind.get_fitness())
+
+    def __repr__(self):
+        return str([ind.get_fitness() for ind in self])
+        
