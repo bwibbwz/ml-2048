@@ -45,9 +45,10 @@ class Runner(object):
         return self.calculate_fitness() < 0 or game_state(matrix) == 'lose'
 
     def calculate_fitness(self):
-        score = max(np.array(self.game.gamegrid.matrix).flatten().tolist())
+        score_max = max(np.array(self.game.gamegrid.matrix).flatten().tolist())
+        score_sum = sum(np.array(self.game.gamegrid.matrix).flatten().tolist())
         penalty = self.fitness_penalty
-        return score + penalty
+        return score_max + score_sum + penalty
         
 game = run2048(manual_input = True, random = False, steps = 0, sleep = 0)
 ind = Individual(neurons_per_hidden_layer = [200, 100],
