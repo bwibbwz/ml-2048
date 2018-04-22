@@ -7,16 +7,17 @@ from activation_functions import DiscreteAF, TanH, PassThrough, Log2, ReLU
 # TEST CODE
 
 import numpy as np
-rgame = run2048(True, False, 0, 1)
+rgame = run2048(True, False, 0, 1, True)
 #rgame.gamegrid.mainloop()
-nn = NeuralNetwork([30, 10], 17, 1, input_af = Log2(),
+nn = NeuralNetwork([30, 30], 17, 1, input_af = Log2(),
                    hidden_af = [ReLU(), ReLU()],
-                   output_af = DiscreteAF(3, TanH))
+                   output_af = DiscreteAF(3, ReLU))
 
 for i in range(13):
     matrix, check = rgame.get_status()
     inp = np.array(rgame.gamegrid.matrix).flatten().tolist()
-    inp.append(check)
+    inp = [x / (max(inp) + 1.0) for x in inp]
+    inp.append(check / (check + 1.0))
     nn.input_and_update(inp)
     rgame.run(input_value=nn.output_layer.get_values()[0])
 

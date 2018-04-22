@@ -12,11 +12,17 @@ class event_rn:
 # link matrix to gamegrid matrix
 
 class run2048:
-    def __init__(self, manual_input = True, random=True, steps=10, sleep=0):
+    def __init__(self, manual_input = True, random=True, steps=10, sleep=0,
+                 log = False):
         self.gamegrid = GameGrid(manual_input)
+        if log:
+            print('Initial GameGrid')
+            print(self.gamegrid.matrix)
+
         self.random = random
         self.steps = steps
         self.sleep = sleep
+        self.log = log
 
         self.gamegrid.win_status = False
 
@@ -35,6 +41,10 @@ class run2048:
 
         event_rn.char = chr(input_value)
         self.take_step(event_rn)
+
+        if self.log:
+            print(self.gamegrid.matrix)
+
         time.sleep(self.sleep)
         self.step += 1
 

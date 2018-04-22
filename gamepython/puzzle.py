@@ -90,7 +90,6 @@ class GameGrid(Frame):
         key = repr(event.char)
         if key in self.commands:
             self.matrix,done = self.commands[repr(event.char)](self.matrix)
-            print(self.matrix)
             if done:
                 self.matrix = add_two(self.matrix)
                 self.update_grid_cells()
