@@ -11,6 +11,40 @@ class GeneticAlgorithm(list):
         for individual in self[-1]:
             individual.set_all_weights(self.generate_random_weights())
 
+    def populate_new_generation(self, parents, generation, carry_on_top_parents=0, add_random=0, mix_odds=0.0, mutate_odds=0.0):
+        parents.sort(reverse=True)
+        parent_weights = [parent.get_all_weights() for parent in parents]
+        child_weights = []
+
+        for k in range(add_random):
+            parent_weights.append(generate_random_weights)
+        index = range(len(parent_weights))
+
+        while len(index) > 1 and len(child_weights) < len(generation):
+            male = index.pop(randint(0, len(index) - 1))
+            female = index.pop(randint(0, len(index) - 1))
+            child = self.breed_weights(parent_weights[male], parent_weights[female], mix_odds = mix_odds, mutate_odds = mutate_odds)
+            child_weights.append(child)
+
+        if len(index) == 1 and len(child_weights) < len(generation):
+            male = index.pop(randint(0, len(index) - 1))
+            female = randint(0, len(parent_weights))
+            child = self.breed_weights(parent_weights[male], parent_weights[female], mix_odds = mix_odds, mutate_odds = mutate_odds)
+            child_weights.append(child)
+
+        # NB: Should I add mutate_odds here?
+        for k in range(carry_on_top_parents): 
+            child_weights.append(parent_weights[k])
+
+        while len(child_weights) < len(generation):
+            male = randint(0, len(parent_weights) - 1)
+            female = randint(0, len(parent_weights) - 1)
+            child = self.breed_weights(parent_weights[male], parent_weights[female], mix_odds = mix_odds, mutate_odds = mutate_odds)
+            child_weights.append(child)
+
+        for k, individual in enumerate(generation):
+            individual.set_all_weights(child_weights[k])
+
     def __repr__(self):
         return str([individual.get_fitness() for individual in self[-1]])
 

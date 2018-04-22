@@ -55,3 +55,9 @@ for gen in ga:
 
 print '|B|R|E|E|D|I|N|G|'
 print ga.breed_weights(ga[-1][1].get_all_weights(), ga[-1][2].get_all_weights(), mix_odds=0.1, mutate_odds=0.1)
+ga.add_new_generation()
+
+print "-- -- -- populate -- -- --"
+for gen in ga:
+    gen.set_random_fitness()
+ga.populate_new_generation(ga[-1], ga[-2], carry_on_top_parents = 1)
