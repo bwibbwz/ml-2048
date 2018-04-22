@@ -46,5 +46,9 @@ for gen in ga:
             print layer
         print ind.get_all_weights()
         print ' --- Individual ---'
+    gen.set_random_fitness()
+    print "Fitness: ", gen
+    print "Fitness: ", gen.sort_by_fitness()
+    print "Fitness: ", gen
     print ' === Generation ==='
 
