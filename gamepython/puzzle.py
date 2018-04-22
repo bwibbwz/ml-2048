@@ -1,4 +1,4 @@
-from tkinter import *
+from Tkinter import *
 from logic import *
 from random import *
 
@@ -47,6 +47,7 @@ class GameGrid(Frame):
         self.init_grid()
         self.init_matrix()
         self.update_grid_cells()
+        self.win_status = True
         
         if not manual_input:
             self.mainloop()
@@ -94,9 +95,10 @@ class GameGrid(Frame):
                 self.matrix = add_two(self.matrix)
                 self.update_grid_cells()
                 done=False
-                if game_state(self.matrix)=='win':
-                    self.grid_cells[1][1].configure(text="You",bg=BACKGROUND_COLOR_CELL_EMPTY)
-                    self.grid_cells[1][2].configure(text="Win!",bg=BACKGROUND_COLOR_CELL_EMPTY)
+                if self.win_status:
+                    if game_state(self.matrix)=='win':
+                        self.grid_cells[1][1].configure(text="You",bg=BACKGROUND_COLOR_CELL_EMPTY)
+                        self.grid_cells[1][2].configure(text="Win!",bg=BACKGROUND_COLOR_CELL_EMPTY)
                 if game_state(self.matrix)=='lose':
                     self.grid_cells[1][1].configure(text="You",bg=BACKGROUND_COLOR_CELL_EMPTY)
                     self.grid_cells[1][2].configure(text="Lose!",bg=BACKGROUND_COLOR_CELL_EMPTY)

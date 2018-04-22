@@ -11,16 +11,14 @@ class event_rn:
 class test2048:
     def __init__(self, manual_input = True, random=True, steps=10, sleep=0):
         self.gamegrid = GameGrid(manual_input=manual_input)
-        #self.gamegrid.mainloop()
         self.random = random
         self.steps = steps
         self.sleep = sleep
 
-    def run(self):
-        # Eitthad
+    def run(self, input_value=None):
         if self.random:
             self.run_random()
-    
+ 
     def run_random(self):
         for k in range(self.steps):
             num = randint(0,3)
@@ -38,4 +36,3 @@ class test2048:
     def take_step(self, inp):
         event_rn.char = chr(inp)
         self.gamegrid.key_down(event_rn)
-
