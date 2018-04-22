@@ -8,7 +8,8 @@ from activation_functions import DiscreteAF, TanH, PassThrough, Log2, ReLU
 
 import numpy as np
 rgame = run2048(True, False, 0, 1)
-nn = NeuralNetwork([30, 30], 17, 1, input_af = Log2(),
+#rgame.gamegrid.mainloop()
+nn = NeuralNetwork([30, 10], 17, 1, input_af = Log2(),
                    hidden_af = [ReLU(), ReLU()],
                    output_af = DiscreteAF(3, TanH))
 
@@ -16,20 +17,14 @@ for i in range(13):
     if i == 0:
         matrix, check = rgame.get_status()
         inp = np.array(matrix).flatten().tolist()
-        print check
         inp.append(check)
-
         nn.input_and_update(inp)
-        print nn.output_layer.get_values()
     else:
         rgame.run(input_value=nn.output_layer.get_values()[0])
         matrix, check = rgame.get_status()
         inp = np.array(rgame.gamegrid.matrix).flatten().tolist()
         inp.append(check)
-        print check
         nn.input_and_update(inp)
-        print nn.output_layer.get_values()
-
 
 #for k in range(10):
 #    new_in = input_values
@@ -73,11 +68,11 @@ for i in range(13):
 #    print ' === Generation ==='
 
 
-print '|B|R|E|E|D|I|N|G|'
-print ga.breed_weights(ga[-1][1].get_all_weights(), ga[-1][2].get_all_weights(), mix_odds=0.1, mutate_odds=0.1)
-ga.add_new_generation()
-
-print "-- -- -- populate -- -- --"
-for gen in ga:
-    gen.set_random_fitness()
-ga.populate_new_generation(ga[-1], ga[-2], carry_on_top_parents = 1)
+#print '|B|R|E|E|D|I|N|G|'
+#print ga.breed_weights(ga[-1][1].get_all_weights(), ga[-1][2].get_all_weights(), mix_odds=0.1, mutate_odds=0.1)
+#ga.add_new_generation()
+#
+#print "-- -- -- populate -- -- --"
+#for gen in ga:
+#    gen.set_random_fitness()
+#ga.populate_new_generation(ga[-1], ga[-2], carry_on_top_parents = 1)
