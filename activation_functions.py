@@ -19,7 +19,7 @@ class Scale(ActivationFunction):
         self.set_scale_factor(scale_factor)
 
     def set_scale_factor(self, scale_factor):
-        self.scale_factor(scale_factor)
+        self.scale_factor = scale_factor
 
     def transform(self, input_value):
         return self.scale_factor * input_value
