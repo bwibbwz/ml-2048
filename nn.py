@@ -4,7 +4,7 @@ from activation_functions import *
 # OTHER FUNCTIONS
 class RandomWrapper():
     def __call__(self):
-        return random()*0.3
+        return random()*0.03
 
 # ACTIVATION FUNCTION DEFAULTS
 NEURON_ACTIVATION_FUNCTION = TanH()

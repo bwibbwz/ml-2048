@@ -50,7 +50,7 @@ class Runner(object):
         return score + penalty
         
 game = run2048(manual_input = True, random = False, steps = 0, sleep = 0)
-ind = Individual(neurons_per_hidden_layer = [10, 10],
+ind = Individual(neurons_per_hidden_layer = [200, 100],
                  input_layer_size = 17,
                  output_layer_size = 4,
                  input_af = Log2(),
