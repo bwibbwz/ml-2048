@@ -1,4 +1,4 @@
-from genetic import Individual
+from genetic import Individual, GeneticAlgorithm
 from random import randint
 from gamepython.run import run2048
 from gamepython.logic import game_state
@@ -18,7 +18,7 @@ class Runner(object):
         matrix, repeat_check = game.get_status()
         game_state = np.array(game.gamegrid.matrix).flatten().tolist()
         game_state.append(repeat_check)
-        if self.has_game_ended(matrix):
+        if self.has_game_ended(matrix, repeat_check):
             return False
         for neuron in individual.input_layer:
             neuron.set_activation_function(Scale(1.0/max(game_state)))
@@ -41,8 +41,8 @@ class Runner(object):
             print '[%.3f %.3f %.3f %.3f]' % tuple(nn_output),
         return game_move
 
-    def has_game_ended(self, matrix):
-        return self.calculate_fitness() < 0 or game_state(matrix) == 'lose'
+    def has_game_ended(self, matrix, repeat_check):
+        return repeat_check > 2 or self.calculate_fitness() < 0 or game_state(matrix) == 'lose'
 
     def calculate_fitness(self):
         score_max = max(np.array(self.game.gamegrid.matrix).flatten().tolist())
@@ -50,19 +50,38 @@ class Runner(object):
         penalty = self.fitness_penalty
         return score_max + score_sum + penalty
         
-game = run2048(manual_input = True, random = False, steps = 0, sleep = 0)
-ind = Individual(neurons_per_hidden_layer = [200, 100],
-                 input_layer_size = 17,
-                 output_layer_size = 4,
-                 input_af = Log2(),
-                 hidden_af = [ReLU(), ReLU()],
-                 output_af = TanH())
-                 #output_af = DiscreteAF(4, TanH))
+GENERATION_SIZE = 20
+GENRATION_COUNT = 10
+PRINT_STEPS = False
 
-runner = Runner(game, ind, print_steps = True)
-while runner.step():
-    pass
-game.gamegrid.destroy()
+nn_parameters = {'neurons_per_hidden_layer': [200, 100],
+                 'input_layer_size': 17,
+                 'output_layer_size': 4,
+                 'input_af': Log2(),
+                 'hidden_af':  [ReLU(), ReLU()],
+                 'output_af': TanH()}
 
+game_parameters = {'manual_input': True,
+                   'random': False,
+                   'steps': 0,
+                   'sleep': 0}
 
+ga = GeneticAlgorithm(generation_size = GENERATION_SIZE, **nn_parameters)
+ga.add_new_generation()
+ga.populate_new_generation(ga[0], ga[0])
+
+for k in range(GENRATION_COUNT):
+    print ' --- Generation: %5i ---' % k
+    for individual in ga[-1]:
+        game = run2048(**game_parameters)
+        runner = Runner(game, individual, print_steps = PRINT_STEPS)
+        while runner.step():
+            pass
+        game.gamegrid.destroy()
+        individual.set_fitness(runner.calculate_fitness())
+        print ' === Individual: %5i ===' % individual.get_fitness()
+
+    ga[-1].sort()
+    ga.add_new_generation()
+    ga.populate_new_generation(ga[-2][:3], ga[-1])
 
