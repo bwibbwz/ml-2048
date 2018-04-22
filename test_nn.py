@@ -14,17 +14,11 @@ nn = NeuralNetwork([30, 10], 17, 1, input_af = Log2(),
                    output_af = DiscreteAF(3, TanH))
 
 for i in range(13):
-    if i == 0:
-        matrix, check = rgame.get_status()
-        inp = np.array(matrix).flatten().tolist()
-        inp.append(check)
-        nn.input_and_update(inp)
-    else:
-        rgame.run(input_value=nn.output_layer.get_values()[0])
-        matrix, check = rgame.get_status()
-        inp = np.array(rgame.gamegrid.matrix).flatten().tolist()
-        inp.append(check)
-        nn.input_and_update(inp)
+    matrix, check = rgame.get_status()
+    inp = np.array(rgame.gamegrid.matrix).flatten().tolist()
+    inp.append(check)
+    nn.input_and_update(inp)
+    rgame.run(input_value=nn.output_layer.get_values()[0])
 
 #for k in range(10):
 #    new_in = input_values

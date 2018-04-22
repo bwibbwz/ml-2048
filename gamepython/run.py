@@ -60,7 +60,5 @@ class run2048:
             self.check_value += 1
         else:
             self.check_value = 0
-        elif self.step == 0:
-            self.check_value = 0
 
         return self.check_value
