@@ -47,5 +47,8 @@ class DiscreteAF(ActivationFunction):
         self.activation_function = activation_function()
 
     def transform(self, input_value):
-        return int(floor(self.activation_function(input_value) * self.number_of_steps))
+        output = int(floor(self.activation_function(input_value) * self.number_of_steps))
+        if output == self.number_of_steps:
+            output -= 1
+        return output
 
