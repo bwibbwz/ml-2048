@@ -48,7 +48,7 @@ for gen in ga:
         print ' --- Individual ---'
     gen.set_random_fitness()
     print "Fitness: ", gen
-    print "Fitness: ", gen.sort_by_fitness()
+    print "Fitness: ", gen.sort()
     print "Fitness: ", gen
     print ' === Generation ==='
 

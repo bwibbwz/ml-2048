@@ -34,6 +34,30 @@ class Individual(NeuralNetwork):
     def get_fitness(self):
         return self.fitness
 
+    def __eq__(self, other):
+        if hasattr(other, 'fitness'):
+            return self.get_fitness() == other.get_fitness()
+
+    def __ne__(self, other):
+        if hasattr(other, 'fitness'):
+            return self.get_fitness() != other.get_fitness()
+
+    def __gt__(self, other):
+        if hasattr(other, 'fitness'):
+            return self.get_fitness() > other.get_fitness()
+
+    def __ge__(self, other):
+        if hasattr(other, 'fitness'):
+            return self.get_fitness() >= other.get_fitness()
+
+    def __lt__(self, other):
+        if hasattr(other, 'fitness'):
+            return self.get_fitness() < other.get_fitness()
+
+    def __le__(self, other):
+        if hasattr(other, 'fitness'):
+            return self.get_fitness() <= other.get_fitness()
+
 class Generation(list):
     def __init__(self, size, **kwargs):
         self.individual_parameters = kwargs
@@ -47,9 +71,6 @@ class Generation(list):
 
     def get_weights_shape(self):
         return self[0].get_weights_shape()
-
-    def sort_by_fitness(self):
-        self.sort(key=lambda ind: ind.get_fitness())
 
     def __repr__(self):
         return str([ind.get_fitness() for ind in self])
