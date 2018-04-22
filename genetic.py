@@ -1,4 +1,4 @@
-from random import random
+from random import random, randint
 from nn import RandomWrapper, NeuralNetwork
 
 class GeneticAlgorithm(list):
@@ -22,6 +22,20 @@ class GeneticAlgorithm(list):
             for sub in layer:
                 weights[-1].append([random() for _ in range(sub)])
         return weights
+
+    def breed(self, male_weights, female_weights):
+        child_weights = []
+        shape = self[0].get_weights_shape()
+        for k in range(len(shape)):
+            child_weights.append([])
+            for h in range(len(shape[k])):
+                child_weights[-1].append([])
+                for j in range(shape[k][h]):
+                    if randint(0,1) == 0:
+                        child_weights[-1][-1].append(male_weights[k][h][j])
+                    else:
+                        child_weights[-1][-1].append(female_weights[k][h][j])
+        return child_weights
 
 class Individual(NeuralNetwork):
     def __init__(self, fitness=0.0, **kwargs):
