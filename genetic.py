@@ -23,7 +23,7 @@ class GeneticAlgorithm(list):
                 weights[-1].append([random() for _ in range(sub)])
         return weights
 
-    def breed_weights(self, male_weights, female_weights):
+    def breed_weights(self, male_weights, female_weights, mix_odds=0.0, mutate_odds=0.0):
         child_weights = []
         shape = self[0].get_weights_shape()
         for k in range(len(shape)):
@@ -31,10 +31,16 @@ class GeneticAlgorithm(list):
             for h in range(len(shape[k])):
                 child_weights[-1].append([])
                 for j in range(shape[k][h]):
-                    if randint(0,1) == 0:
-                        child_weights[-1][-1].append(male_weights[k][h][j])
+                    new_weight = 0.0
+                    if random() < mix_odds:
+                        new_weight = (male_weights[k][h][j] + female_weights[k][h][j]) / 2.0
+                    elif random() < mutate_odds:
+                        new_weight = random()
+                    elif randint(0,1) == 0:
+                        new_weight = male_weights[k][h][j]
                     else:
-                        child_weights[-1][-1].append(female_weights[k][h][j])
+                        new_weight = female_weights[k][h][j]
+                    child_weights[-1][-1].append(new_weight)
         return child_weights
 
 class Individual(NeuralNetwork):
