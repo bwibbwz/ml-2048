@@ -194,6 +194,7 @@ class NeuralNetwork(object):
     def input_and_update(self, input_values):
         self.input_values(input_values)
         self.update_all_layers()
+        return self.output_layer.get_values()
 
     def get_weights_shape(self):
         shape = []
