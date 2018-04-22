@@ -54,4 +54,4 @@ for gen in ga:
 
 
 print '|B|R|E|E|D|I|N|G|'
-print ga.breed(ga[-1][1].get_all_weights(), ga[-1][2].get_all_weights())
+print ga.breed_weights(ga[-1][1].get_all_weights(), ga[-1][2].get_all_weights())

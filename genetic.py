@@ -23,7 +23,7 @@ class GeneticAlgorithm(list):
                 weights[-1].append([random() for _ in range(sub)])
         return weights
 
-    def breed(self, male_weights, female_weights):
+    def breed_weights(self, male_weights, female_weights):
         child_weights = []
         shape = self[0].get_weights_shape()
         for k in range(len(shape)):
