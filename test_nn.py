@@ -52,3 +52,6 @@ for gen in ga:
     print "Fitness: ", gen
     print ' === Generation ==='
 
+
+print '|B|R|E|E|D|I|N|G|'
+print ga.breed(ga[-1][1].get_all_weights(), ga[-1][2].get_all_weights())
