@@ -52,13 +52,13 @@ class Runner(object):
         
 GENERATION_SIZE = 20
 GENRATION_COUNT = 10
-PRINT_STEPS = False
+PRINT_STEPS = True
 
-nn_parameters = {'neurons_per_hidden_layer': [200, 100],
+nn_parameters = {'neurons_per_hidden_layer': [200, 100, 50],
                  'input_layer_size': 17,
                  'output_layer_size': 4,
                  'input_af': Log2(),
-                 'hidden_af':  [ReLU(), ReLU()],
+                 'hidden_af':  [ReLU(), ReLU(), ReLU()],
                  'output_af': TanH()}
 
 game_parameters = {'manual_input': True,
@@ -79,6 +79,7 @@ for k in range(GENRATION_COUNT):
             pass
         game.gamegrid.destroy()
         individual.set_fitness(runner.calculate_fitness())
+#        print individual.get_all_weights()
         print ' === Individual: %5i ===' % individual.get_fitness()
 
     ga[-1].sort()
