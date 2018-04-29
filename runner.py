@@ -24,7 +24,7 @@ class Runner(object):
         for neuron in individual.input_layer:
             neuron.set_activation_function(SoftMax(game_state, temperature=0.01, activation_function=Log2))
         #print individual.hidden_layers[0].get_values()
-        game_input = self.output_to_move(individual.input_and_update(game_state))
+        game_input = self.output_to_move(individual.input_and_update(game_state, output_softmax = True))
         game.run(input_value = game_input)
         self.fitness_penalty -= repeat_check
         if self.print_steps:
@@ -51,11 +51,11 @@ class Runner(object):
         penalty = self.fitness_penalty
         return score_max + score_sum + penalty
         
-GENERATION_SIZE = 20
-GENRATION_COUNT = 10
+GENERATION_SIZE = 4
+GENRATION_COUNT = 2
 PRINT_STEPS = True
 
-nn_parameters = {'neurons_per_hidden_layer': [200, 100, 50],
+nn_parameters = {'neurons_per_hidden_layer': [17, 17, 17],
                  'input_layer_size': 17,
                  'output_layer_size': 4,
                  'input_af': Log2(),

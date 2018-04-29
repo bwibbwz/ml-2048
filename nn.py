@@ -219,9 +219,13 @@ class NeuralNetwork(object):
     def input_values(self, input_values):
         self.input_layer.set_values(input_values)
 
-    def input_and_update(self, input_values):
+    def input_and_update(self, input_values, output_softmax=False):
         self.input_values(input_values)
         self.update_all_layers()
+        if output_softmax:
+            for neuron in self.output_layer:
+                neuron.set_activation_function(SoftMax([n.get_input_value() for n in self[-1]]))
+                neuron.update_value()
         return self.output_layer.get_values()
 
     def get_weights_shape(self):
