@@ -18,12 +18,19 @@ WEIGHT_INITIAL_VALUE = RandomWrapper()
 
 # NODES, NEURONS AND WEIGHTS
 class Node(object):
-    def __init__(self, initial_value=None, activation_function=NODE_ACTIVATION_FUNCTION):
+    def __init__(self, initial_value=None, bias=0.0, activation_function=NODE_ACTIVATION_FUNCTION):
         self.set_activation_function(activation_function)
         self.set_value(initial_value)
+        self.set_bias(bias)
 
     def set_activation_function(self, activation_function):
         self.activation_function = activation_function
+
+    def get_bias(self):
+        return self.bias
+
+    def set_bias(self, bias):
+        self.bias = bias
 
     def get_value(self):
         return self.value
