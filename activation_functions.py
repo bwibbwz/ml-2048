@@ -4,11 +4,11 @@ import numpy as np
 
 # ACTIVATION FUNCTIONS
 class ActivationFunction():
-    def __call__(self, input_value):
+    def __call__(self, input_value, **kwargs):
         if input_value is None:
             return None
         else:
-            return self.transform(input_value)
+            return self.transform(input_value, **kwargs)
 
 class PassThrough(ActivationFunction):
     def transform(self, input_value):
@@ -16,6 +16,9 @@ class PassThrough(ActivationFunction):
 
 class Scale(ActivationFunction):
     def __init__(self, scale_factor):
+        self.set_scale_factor(scale_factor)
+
+    def set_scale_factor(self, scale_factor):
         self.scale_factor = scale_factor
 
     def transform(self, input_value):

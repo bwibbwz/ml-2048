@@ -9,7 +9,7 @@ class GeneticAlgorithm(list):
     def add_new_generation(self):
         super(GeneticAlgorithm, self).append(Generation(self.generation_size, **self.individual_parameters))
         for individual in self[-1]:
-            individual.set_all_weights(self.generate_random_weights())
+            individual.set_all_weights(self.generate_weights(method = 'hi_low'))
 
     def populate_new_generation(self, parents, generation, carry_on_top_parents=0, add_random=0, mix_odds=0.0, mutate_odds=0.0):
         parents.sort(reverse=True)
@@ -17,7 +17,7 @@ class GeneticAlgorithm(list):
         child_weights = []
 
         for k in range(add_random):
-            parent_weights.append(generate_random_weights)
+            parent_weights.append(generate_weights(method = 'hi_low'))
         index = range(len(parent_weights))
 
         while len(index) > 1 and len(child_weights) < len(generation):
@@ -28,7 +28,7 @@ class GeneticAlgorithm(list):
 
         if len(index) == 1 and len(child_weights) < len(generation):
             male = index.pop(randint(0, len(index) - 1))
-            female = randint(0, len(parent_weights))
+            female = randint(0, len(parent_weights) - 1)
             child = self.breed_weights(parent_weights[male], parent_weights[female], mix_odds = mix_odds, mutate_odds = mutate_odds)
             child_weights.append(child)
 
@@ -48,13 +48,18 @@ class GeneticAlgorithm(list):
     def __repr__(self):
         return str([individual.get_fitness() for individual in self[-1]])
 
-    def generate_random_weights(self):
+    def generate_weights(self, method='hi_low'):
         shape = self[0].get_weights_shape()
         weights = []
         for layer in shape:
             weights.append([])
             for sub in layer:
-                weights[-1].append([random() for _ in range(sub)])
+                if method == 'random':
+                    weights[-1].append([random() for _ in range(sub)])
+                elif method == 'hi_low':
+                    weights[-1].append([random() * 0.1 + randint(0, 1) * 0.9  for _ in range(sub)])
+                else:
+                    raise ValuError("The only implemented methods are random and hi_low.")
         return weights
 
     def breed_weights(self, male_weights, female_weights, mix_odds=0.0, mutate_odds=0.0):
