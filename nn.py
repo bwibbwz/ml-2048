@@ -18,9 +18,10 @@ WEIGHT_INITIAL_VALUE = RandomWrapper()
 
 # NODES, NEURONS AND WEIGHTS
 class Node(object):
-    def __init__(self, initial_value=None, bias=0.0, activation_function=NODE_ACTIVATION_FUNCTION):
+    def __init__(self, initial_input_value=None, initial_output_value=None, bias=0.0, activation_function=NODE_ACTIVATION_FUNCTION):
         self.set_activation_function(activation_function)
-        self.set_value(initial_value)
+        self.set_input_value(initial_input_value)
+        self.set_output_value(initial_output_value)
         self.set_bias(bias)
 
     def set_activation_function(self, activation_function):
@@ -32,18 +33,35 @@ class Node(object):
     def set_bias(self, bias):
         self.bias = bias
 
-    def get_value(self):
-        return self.value
+    def get_input_value(self):
+        return self.input_value
 
+    def set_input_value(self, input_value):
+        self.input_value = input_value
+
+    def get_output_value(self):
+        return self.output_value
+
+    def set_output_value(self, output_value):
+        self.output_value = output_value
+
+    def update_value(self):
+        self.set_output_value(self.activation_function(self.get_bias() + self.get_input_value()))
+
+    # NB: This is here just for completeness against the previous code.
+    def get_value(self):
+        return self.get_output_value()
+
+    # NB: This is here just for completeness against the previous code.
     def set_value(self, value):
-        self.value = self.activation_function(value)
+        self.set_input_value(value)
 
     def __repr__(self):
-        return str(self.value)
+        return str(self.get_output_value())
 
 class Neuron(Node):
-    def __init__(self, previous_layer, initial_value=0.0, activation_function=NEURON_ACTIVATION_FUNCTION):
-        super(Neuron, self).__init__(initial_value = initial_value, activation_function = activation_function)
+    def __init__(self, previous_layer, activation_function=NEURON_ACTIVATION_FUNCTION):
+        super(Neuron, self).__init__(activation_function = activation_function)
         self.set_previous_layer(previous_layer)
 
         self.set_weights_layer(WeightLayer(self, self.get_previous_layer(), len(self.get_previous_layer())))
@@ -67,14 +85,16 @@ class Neuron(Node):
             raise ValueError('The lengths of the previous layer (%i) does not mach the amount of weights(%i)' % (len(pl), len(wl)))
         new_value = 0.0
         for k in range(len(pl)):
-            new_value += pl[k].get_value() * wl[k].get_value()
-        self.set_value(new_value)
+            new_value += pl[k].get_output_value() * wl[k].get_value()
+        self.set_input_value(new_value)
+        self.set_output_value(self.activation_function(self.get_bias() + self.get_input_value()))
 
 class Weight(Node):
     def __init__(self, node_in, node_out, initial_value=WEIGHT_INITIAL_VALUE):
         self.node_in = node_in
         self.node_out = node_out
-        super(Weight, self).__init__(initial_value = initial_value, activation_function = WEIGHT_ACTIVATION_FUNCTION)
+        super(Weight, self).__init__(initial_input_value = initial_value, activation_function = WEIGHT_ACTIVATION_FUNCTION)
+        self.update_value()
 
 # LAYERS
 class Layer(list):
@@ -89,10 +109,11 @@ class Layer(list):
             raise ValueError("The length of the input values (%i) does not match the length of the layer (%i)." % (len(values), len(self)))
         else:
             for k in range(len(self)):
-                self[k].set_value(values[k])
+                self[k].set_input_value(values[k])
+                self[k].update_value()
 
     def get_values(self):
-        return [node.get_value() for node in self]
+        return [node.get_output_value() for node in self]
 
     def get_weights_layer(self):
         return self.weights
@@ -141,15 +162,15 @@ class InputLayer(Layer):
         super(InputLayer, self).__init__(number_of_items, item_class, activation_function = activation_function, **kwargs)
         self.set_previous_layer(None)
 
-    def update_layer(self):
-        pass
+#    def update_layer(self):
+#        pass
         
     def get_weights_shape(self):
         pass
 
 class OutputLayer(Layer):
     def __init__(self, previous_layer, number_of_items, item_class=Neuron, activation_function=OUTPUT_ACTIVATION_FUNCTION, **kwargs):
-        super(OutputLayer, self).__init__(number_of_items, item_class, previous_layer = previous_layer, activation_function = activation_function, initial_value = 0.0, **kwargs)
+        super(OutputLayer, self).__init__(number_of_items, item_class, previous_layer = previous_layer, activation_function = activation_function, **kwargs)
         self.set_previous_layer(previous_layer)
 
         weights = []
