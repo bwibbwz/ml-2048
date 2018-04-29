@@ -2,8 +2,9 @@ from genetic import Individual, GeneticAlgorithm
 from random import randint
 from gamepython.run import run2048
 from gamepython.logic import game_state
-from activation_functions import DiscreteAF, TanH, PassThrough, Log2, ReLU, Scale
+from activation_functions import DiscreteAF, TanH, PassThrough, Log2, ReLU, Scale, Sigmoid, SoftMax
 import numpy as np
+from math import exp
 
 class Runner(object):
     def __init__(self, game, individual, print_steps=False):
@@ -21,7 +22,7 @@ class Runner(object):
         if self.has_game_ended(matrix, repeat_check):
             return False
         for neuron in individual.input_layer:
-            neuron.set_activation_function(Scale(1.0/max(game_state)))
+            neuron.set_activation_function(SoftMax(game_state, temperature=0.01, activation_function=Log2))
         #print individual.hidden_layers[0].get_values()
         game_input = self.output_to_move(individual.input_and_update(game_state))
         game.run(input_value = game_input)
@@ -58,7 +59,7 @@ nn_parameters = {'neurons_per_hidden_layer': [200, 100, 50],
                  'input_layer_size': 17,
                  'output_layer_size': 4,
                  'input_af': Log2(),
-                 'hidden_af':  [ReLU(), ReLU(), ReLU()],
+                 'hidden_af':  [TanH(), ReLU(), Sigmoid()],
                  'output_af': TanH()}
 
 game_parameters = {'manual_input': True,
