@@ -273,3 +273,5 @@ class NeuralNetwork(object):
         else:
             return self.hidden_layers[index - 1]
             
+    def __repr__(self):
+        return '\n'. join([' | '.join(['{:.3f}'.format(neuron.get_value()) for neuron in layer]) for layer in self])

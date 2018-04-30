@@ -28,6 +28,7 @@ class Runner(object):
         self.fitness_penalty -= repeat_check
         if self.print_steps:
             print "Input: %i | State: %s | %i | Fitness: %i" % (game_input, matrix, repeat_check, self.calculate_fitness())
+        print individual
         return True
 
     # Change a list to binary values of length 'binary_size'. The 2^0 digit is omitted since it never appears in the 2048 game.
