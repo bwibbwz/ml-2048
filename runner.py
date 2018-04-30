@@ -23,6 +23,7 @@ class Runner(object):
             return False
         binary_game_state = self.binarize_input(game_state, binary_size = BINARY_SIZE)
         game_input = self.output_to_move(individual.input_and_update(binary_game_state, output_softmax = True))
+#        self.display_values(individual)
         game.run(input_value = game_input)
         self.fitness_penalty -= repeat_check
         if self.print_steps:
@@ -62,6 +63,7 @@ GENERATION_SIZE = 4
 GENRATION_COUNT = 2
 PRINT_STEPS = True
 BINARY_SIZE = 4
+WEIGHTS_METHOD = 'random'
 
 nn_parameters = {'neurons_per_hidden_layer': [17 * BINARY_SIZE, 17 * BINARY_SIZE, 17 * BINARY_SIZE],
                  'input_layer_size': 17 * BINARY_SIZE,
@@ -76,8 +78,8 @@ game_parameters = {'manual_input': True,
                    'sleep': 0}
 
 ga = GeneticAlgorithm(generation_size = GENERATION_SIZE, **nn_parameters)
-ga.add_new_generation()
-ga.populate_new_generation(ga[0], ga[0])
+ga.add_new_generation(weights_method = WEIGHTS_METHOD)
+ga.populate_new_generation(ga[0], ga[0], weights_method = WEIGHTS_METHOD)
 
 for k in range(GENRATION_COUNT):
     print ' --- Generation: %5i ---' % k
@@ -92,6 +94,6 @@ for k in range(GENRATION_COUNT):
         print ' === Individual: %5i ===' % individual.get_fitness()
 
     ga[-1].sort()
-    ga.add_new_generation()
-    ga.populate_new_generation(ga[-2][:3], ga[-1])
+    ga.add_new_generation(weights_method = WEIGHTS_METHOD)
+    ga.populate_new_generation(ga[-2][:3], ga[-1], weights_method = WEIGHTS_METHOD)
 
