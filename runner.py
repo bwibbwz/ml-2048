@@ -54,6 +54,7 @@ class Runner(object):
 GENERATION_SIZE = 4
 GENRATION_COUNT = 2
 PRINT_STEPS = True
+WEIGHTS_METHOD = 'random'
 
 nn_parameters = {'neurons_per_hidden_layer': [17, 17, 17],
                  'input_layer_size': 17,
@@ -68,8 +69,8 @@ game_parameters = {'manual_input': True,
                    'sleep': 0}
 
 ga = GeneticAlgorithm(generation_size = GENERATION_SIZE, **nn_parameters)
-ga.add_new_generation()
-ga.populate_new_generation(ga[0], ga[0])
+ga.add_new_generation(weights_method = WEIGHTS_METHOD)
+ga.populate_new_generation(ga[0], ga[0], weights_method = WEIGHTS_METHOD)
 
 for k in range(GENRATION_COUNT):
     print ' --- Generation: %5i ---' % k
@@ -84,6 +85,6 @@ for k in range(GENRATION_COUNT):
         print ' === Individual: %5i ===' % individual.get_fitness()
 
     ga[-1].sort()
-    ga.add_new_generation()
-    ga.populate_new_generation(ga[-2][:3], ga[-1])
+    ga.add_new_generation(weights_method = WEIGHTS_METHOD)
+    ga.populate_new_generation(ga[-2][:3], ga[-1], weights_method = WEIGHTS_METHOD)
 
