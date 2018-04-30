@@ -21,15 +21,22 @@ class Runner(object):
         game_state.append(repeat_check)
         if self.has_game_ended(matrix, repeat_check):
             return False
-        for neuron in individual.input_layer:
-            neuron.set_activation_function(SoftMax(game_state, temperature=0.01, activation_function=Log2))
-        #print individual.hidden_layers[0].get_values()
-        game_input = self.output_to_move(individual.input_and_update(game_state, output_softmax = True))
+        binary_game_state = self.binarize_input(game_state, binary_size = BINARY_SIZE)
+        game_input = self.output_to_move(individual.input_and_update(binary_game_state, output_softmax = True))
         game.run(input_value = game_input)
         self.fitness_penalty -= repeat_check
         if self.print_steps:
             print "Input: %i | State: %s | %i | Fitness: %i" % (game_input, matrix, repeat_check, self.calculate_fitness())
         return True
+
+    # Change a list to binary values of length 'binary_size'. The 2^0 digit is omitted since it never appears in the 2048 game.
+    def binarize_input(self, game_state, binary_size=11):
+        bin_game_state = []
+        for number in game_state:
+            bin_string = ("{0:0%ib}" % (binary_size + 1)).format(number)[:-1]
+            bin_int_list = [int(n) for n in bin_string]
+            bin_game_state.extend(bin_int_list)
+        return bin_game_state
 
     def output_to_move(self, nn_output):
         game_move = 0
@@ -54,11 +61,12 @@ class Runner(object):
 GENERATION_SIZE = 4
 GENRATION_COUNT = 2
 PRINT_STEPS = True
+BINARY_SIZE = 4
 
-nn_parameters = {'neurons_per_hidden_layer': [17, 17, 17],
-                 'input_layer_size': 17,
+nn_parameters = {'neurons_per_hidden_layer': [17 * BINARY_SIZE, 17 * BINARY_SIZE, 17 * BINARY_SIZE],
+                 'input_layer_size': 17 * BINARY_SIZE,
                  'output_layer_size': 4,
-                 'input_af': Log2(),
+                 'input_af': PassThrough(),
                  'hidden_af':  [TanH(), ReLU(), Sigmoid()],
                  'output_af': TanH()}
 
