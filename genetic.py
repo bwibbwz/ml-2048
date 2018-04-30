@@ -6,18 +6,18 @@ class GeneticAlgorithm(list):
         self.individual_parameters = kwargs
         self.generation_size = generation_size
 
-    def add_new_generation(self):
+    def add_new_generation(self, weights_method='hi_low'):
         super(GeneticAlgorithm, self).append(Generation(self.generation_size, **self.individual_parameters))
         for individual in self[-1]:
-            individual.set_all_weights(self.generate_weights(method = 'hi_low'))
+            individual.set_all_weights(self.generate_weights(method = weights_method))
 
-    def populate_new_generation(self, parents, generation, carry_on_top_parents=0, add_random=0, mix_odds=0.0, mutate_odds=0.0):
+    def populate_new_generation(self, parents, generation, carry_on_top_parents=0, add_random=0, mix_odds=0.0, mutate_odds=0.0, weights_method='hi_low'):
         parents.sort(reverse=True)
         parent_weights = [parent.get_all_weights() for parent in parents]
         child_weights = []
 
         for k in range(add_random):
-            parent_weights.append(generate_weights(method = 'hi_low'))
+            parent_weights.append(generate_weights(method = weights_method))
         index = range(len(parent_weights))
 
         while len(index) > 1 and len(child_weights) < len(generation):
