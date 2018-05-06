@@ -16,13 +16,15 @@ class Runner(object):
     def step(self):
         game = self.game
         individual = self.individual
+        for node in individual[1]:
+            node.set_bias(1.0)
         matrix, repeat_check = game.get_status()
         game_state = np.array(game.gamegrid.matrix).flatten().tolist()
-        game_state.append(repeat_check)
+        game_state.append(repeat_check*2)
         if self.has_game_ended(matrix, repeat_check):
             return False
         binary_game_state = self.binarize_input(game_state, binary_size = BINARY_SIZE)
-        game_input = self.output_to_move(individual.input_and_update(binary_game_state, output_softmax = True))
+        game_input = self.output_to_move(individual.input_and_update(binary_game_state, output_softmax = OUTPUT_SOFTMAX))
 #        self.display_values(individual)
         game.run(input_value = game_input)
         self.fitness_penalty -= repeat_check
@@ -63,14 +65,15 @@ class Runner(object):
 GENERATION_SIZE = 4
 GENRATION_COUNT = 2
 PRINT_STEPS = True
-BINARY_SIZE = 4
-WEIGHTS_METHOD = 'random'
+BINARY_SIZE = 3
+WEIGHTS_METHOD = 'hi_low'
+OUTPUT_SOFTMAX = True
 
-nn_parameters = {'neurons_per_hidden_layer': [17 * BINARY_SIZE, 17 * BINARY_SIZE, 17 * BINARY_SIZE],
+nn_parameters = {'neurons_per_hidden_layer': [17 * BINARY_SIZE, 17 * BINARY_SIZE],
                  'input_layer_size': 17 * BINARY_SIZE,
                  'output_layer_size': 4,
                  'input_af': PassThrough(),
-                 'hidden_af':  [TanH(), ReLU(), Sigmoid()],
+                 'hidden_af':  [TanH(), TanH()],
                  'output_af': TanH()}
 
 game_parameters = {'manual_input': True,
