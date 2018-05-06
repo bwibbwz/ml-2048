@@ -1,5 +1,5 @@
 from genetic import Individual, GeneticAlgorithm
-from random import randint
+from random import randint, random
 from gamepython.run import run2048
 from gamepython.logic import game_state
 from activation_functions import DiscreteAF, TanH, PassThrough, Log2, ReLU, Scale, Sigmoid, SoftMax
@@ -42,15 +42,23 @@ class Runner(object):
             bin_game_state.extend(bin_int_list)
         return bin_game_state
 
-    def output_to_move(self, nn_output):
+    def output_to_move(self, nn_output, probability_output=True):
         game_move = 0
-        max_value = 0.0
-        for k in range(len(nn_output)):
-           if nn_output[k] > max_value:
-                game_move = k
-                max_value = nn_output[k] 
+        if probability_output:
+            random_number = random()
+            distribution_sum = nn_output[game_move]
+            while random_number > distribution_sum:
+                game_move += 1
+                distribution_sum += nn_output[game_move]
+        else:
+            max_value = 0.0
+            for k in range(len(nn_output)):
+                if nn_output[k] > max_value:
+                    game_move = k
+                    max_value = nn_output[k] 
         if self.print_steps:
             print '[%.3f %.3f %.3f %.3f]' % tuple(nn_output),
+            print ' %.5f -> %i' % (sum(nn_output), game_move)
         return game_move
 
     def has_game_ended(self, matrix, repeat_check):
