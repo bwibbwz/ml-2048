@@ -30,7 +30,7 @@ class Runner(object):
         self.fitness_penalty -= repeat_check
         if self.print_steps:
             print "Input: %i | State: %s | %i | Fitness: %i" % (game_input, matrix, repeat_check, self.calculate_fitness())
-        print individual
+        #print individual
         return True
 
     # Change a list to binary values of length 'binary_size'. The 2^0 digit is omitted since it never appears in the 2048 game.
@@ -56,13 +56,13 @@ class Runner(object):
                 if nn_output[k] > max_value:
                     game_move = k
                     max_value = nn_output[k] 
-        if self.print_steps:
-            print '[%.3f %.3f %.3f %.3f]' % tuple(nn_output),
-            print ' %.5f -> %i' % (sum(nn_output), game_move)
+#        if self.print_steps:
+#            print '[%.3f %.3f %.3f %.3f]' % tuple(nn_output),
+#            print ' %.5f -> %i' % (sum(nn_output), game_move)
         return game_move
 
     def has_game_ended(self, matrix, repeat_check):
-        return repeat_check > 2 or self.calculate_fitness() < 0 or game_state(matrix) == 'lose'
+        return repeat_check > 8 or self.calculate_fitness() < 0 or game_state(matrix) == 'lose'
 
     def calculate_fitness(self):
         score_max = max(np.array(self.game.gamegrid.matrix).flatten().tolist())
@@ -70,10 +70,10 @@ class Runner(object):
         penalty = self.fitness_penalty
         return score_max + score_sum + penalty
         
-GENERATION_SIZE = 4
-GENRATION_COUNT = 2
-PRINT_STEPS = True
-BINARY_SIZE = 3
+GENERATION_SIZE = 10
+GENRATION_COUNT = 20
+PRINT_STEPS = False
+BINARY_SIZE = 11
 WEIGHTS_METHOD = 'hi_low'
 OUTPUT_SOFTMAX = True
 
@@ -94,7 +94,8 @@ ga.add_new_generation(weights_method = WEIGHTS_METHOD)
 ga.populate_new_generation(ga[0], ga[0], weights_method = WEIGHTS_METHOD)
 
 for k in range(GENRATION_COUNT):
-    print ' --- Generation: %5i ---' % k
+    print ' --- Generation: %7i ---' % k
+    gen_fitness = 0
     for individual in ga[-1]:
         game = run2048(**game_parameters)
         runner = Runner(game, individual, print_steps = PRINT_STEPS)
@@ -103,7 +104,12 @@ for k in range(GENRATION_COUNT):
         game.gamegrid.destroy()
         individual.set_fitness(runner.calculate_fitness())
 #        print individual.get_all_weights()
-        print ' === Individual: %5i ===' % individual.get_fitness()
+        print ' === Individual: %7i ===' % individual.get_fitness()
+        gen_fitness += individual.get_fitness()
+    #print ' --- Generation: %7i ---' % gen_fitness
+    print ' ___ __________: %7i ___' % gen_fitness
+    #print ' ___________________________'
+        
 
     ga[-1].sort()
     ga.add_new_generation(weights_method = WEIGHTS_METHOD)
